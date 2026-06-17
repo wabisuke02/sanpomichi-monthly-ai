@@ -1,0 +1,1 @@
+# sanpomichi-monthly-ai
