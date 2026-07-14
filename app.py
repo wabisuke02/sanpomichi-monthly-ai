@@ -11,15 +11,23 @@ client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY")
 )
 
-st.title("デイサービス散歩道 月次報告AI")
+st.title("守の会・わびすけ月次報告書AI")
 
-office_name = st.text_input("事業所名", "デイサービス散歩道")
+office_name = st.selectbox(
+    "事業所名",
+    [
+        "デイサービス散歩道",
+        "散歩道金沢",
+        "介護福祉サービス守の会",
+        "介護支援サービス守の会"
+    ]
+)
 target_month = st.text_input("対象月", "2026年6月")
 
 excel_report = st.text_area(
-    "Excelの月次報告書をコピーして、そのまま貼り付けてください",
+    "Excelの月次報告書をコピーして、そのまま貼り付けてください。",
     height=400,
-    placeholder="Excelの表を範囲選択 → コピー → ここに貼り付け"
+    placeholder="Excelの表を範囲選択 → コピー → ここに貼り付け。その他の資料なども貼り付けてOKです。"
 )
 
 activities = st.text_area(
@@ -70,6 +78,12 @@ next_action = st.text_area(
     "来月やること",
     height=150,
     placeholder="例：空き情報FAX、ケアマネ営業、計画書研修、見学促進 など"
+)
+
+remarks = st.text_area(
+    "備考・背景事情",
+    height=180,
+    placeholder="例：退職予定、新人育成、担当件数を意図的に減らしている理由、人員体制、管理者として気になる点など"
 )
 
 if st.button("報告書作成"):
@@ -168,6 +182,10 @@ Excel月次報告書：
 
 来月やること：
 {next_action}
+
+備考・背景事情：
+{remarks}
+
 """
 
     response = client.chat.completions.create(
@@ -182,7 +200,7 @@ Excel月次報告書：
     st.write(report_text)
 
     doc = Document()
-    doc.add_heading("デイサービス散歩道 月次報告書", level=1)
+    doc.add_heading("守の会・わびすけ月次報告書", level=1)
 
     for line in report_text.split("\n"):
         if line.strip():
@@ -202,7 +220,7 @@ Excel月次報告書：
 if st.button("月次ミーティングレジメ作成"):
 
     meeting_prompt = f"""
-あなたは「デイサービス散歩道 ミーティングレジメ作成AI」です。
+あなたは「介護事業所 ミーティングレジメ作成AI」です。
 
 目的：
 管理者が作成した月次報告書と入力情報から、
@@ -279,6 +297,10 @@ Excel月次報告書：
 
 来月やること：
 {next_action}
+
+備考・背景事情：
+{remarks}
+
 """
 
     meeting_response = client.chat.completions.create(
